@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, Button, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 
 const HomeScreen = ({ navigation }) => {
   return (
@@ -28,29 +28,41 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     padding: 20,
-    backgroundColor: '#f8f9fa',
+    backgroundColor: '#DAC0FF',
   },
   title: {
-    fontSize: 24,
+    fontSize: 36,
+    textAlign: 'center',
     fontWeight: 'bold',
-    marginBottom: 10,
+    marginBottom: 20,
+    color: '#024802',
+    textShadowColor: '#171717',
+    textShadowOffset: { width: 1, height: 1 },
+    textShadowRadius: 4,
   },
   subtitle: {
-    fontSize: 16,
-    color: '#555',
+    fontSize: 18,
+    color: '#024802',
     textAlign: 'center',
-    marginBottom: 20,
+    marginBottom: 50,
+    fontWeight: '500',
   },
   button: {
-    backgroundColor: '#007BFF',
-    paddingVertical: 12,
-    paddingHorizontal: 20,
-    borderRadius: 5,
-    marginBottom: 10,
+    backgroundColor: '#C195FF',
+    paddingVertical: 14,
+    paddingHorizontal: 30,
+    borderRadius: 25,
+    marginBottom: 15,
+    width: '70%',
+    alignItems: 'center',
+    shadowColor: '#171717',
+    shadowOffset: { width: 2, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 3,
   },
   buttonText: {
-    color: '#fff',
-    fontSize: 16,
+    color: '#024802',
+    fontSize: 18,
     fontWeight: 'bold',
   },
 });
