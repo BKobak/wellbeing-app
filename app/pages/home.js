@@ -2,10 +2,11 @@ import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, Modal, StyleSheet } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome'; 
 import SegmentedControl from '@react-native-segmented-control/segmented-control';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const HomeScreen = ({ navigation }) => {
   const [modalVisible, setModalVisible] = useState(false);
-  const [entryType, setEntryType] = useState('Headache'); // Default selection
+  const [entryType, setEntryType] = useState('Headache'); 
   const [selectedSymptoms, setSelectedSymptoms] = useState([]);
 
   const symptomsList = [
@@ -25,14 +26,42 @@ const HomeScreen = ({ navigation }) => {
     );
   };
 
-  const handleSaveEntry = () => {
-    console.log('Entry Type:', entryType);
-    console.log('Selected Symptoms:', selectedSymptoms);
-    setModalVisible(false);
-  };
+  const handleSaveEntry = async () => {
+    const newEntry = {
+        type: entryType,
+        symptoms: selectedSymptoms,
+        timestamp: new Date().toISOString(),
+    };
+
+    try {
+        const existingLogs = await AsyncStorage.getItem('logs');
+        const logs = existingLogs ? JSON.parse(existingLogs) : [];
+
+        logs.push(newEntry);
+
+        await AsyncStorage.setItem('logs', JSON.stringify(logs));
+
+        setModalVisible(false);
+    } catch (error) {
+        console.error("Error saving log:", error);
+    }
+};
 
   return (
     <View style={styles.container}>
+      {/* Top Navigation Bar */}
+      <View style={styles.navbar}>
+        <TouchableOpacity onPress={() => navigation.navigate('Home')}>
+          <Icon name="home" size={30} color="#fff" />
+        </TouchableOpacity>
+        <TouchableOpacity onPress={() => navigation.navigate('Chatbot')}>
+          <Icon name="comments" size={30} color="#fff" />
+        </TouchableOpacity>
+        <TouchableOpacity onPress={() => navigation.navigate('Reports')}>
+          <Icon name="bar-chart" size={30} color="#fff" />
+        </TouchableOpacity>
+      </View>
+
       <Text style={styles.title}>Migraine & Headache Diary</Text>
       <Text style={styles.subtitle}>Track your symptoms, triggers, and relief methods</Text>
 
@@ -50,15 +79,15 @@ const HomeScreen = ({ navigation }) => {
 
       {/* Pop-up Modal */}
       <Modal animationType="slide" transparent={true} visible={modalVisible}>
-        <View style={styles.modalContainer}>
+        <View style={styles.modalOverlay}>
           <View style={styles.modalContent}>
             <Text style={styles.modalTitle}>Log New Episode</Text>
 
             {/* Type Selection (Headache/Migraine) */}
             <Text style={styles.sectionTitle}>Entry Type:</Text>
             <SegmentedControl
-              values={['Headache', 'Migraine']}
-              selectedIndex={entryType === 'Headache' ? 0 : 1}
+              values={["Headache", "Migraine"]}
+              selectedIndex={entryType === "Headache" ? 0 : 1}
               onChange={(event) => setEntryType(event.nativeEvent.value)}
               style={styles.segmentControl}
               tintColor="#C195FF"
@@ -79,7 +108,7 @@ const HomeScreen = ({ navigation }) => {
                   <Icon
                     name={symptom.icon}
                     size={30}
-                    color={selectedSymptoms.includes(symptom.id) ? '#fff' : '#024802'}
+                    color={selectedSymptoms.includes(symptom.id) ? "#fff" : "#024802"}
                   />
                   <Text
                     style={[
@@ -107,7 +136,7 @@ const HomeScreen = ({ navigation }) => {
   );
 };
 
-// Styles (Matches your login page)
+// Styles (Including Navigation Bar)
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -115,6 +144,26 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     padding: 20,
     backgroundColor: '#DAC0FF',
+  },
+  navbar: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    alignItems: 'center',
+    width: '120%',
+    height: 80,
+    backgroundColor: '#5A189A',
+    position: 'absolute',
+    top: -10,
+    left: 0,
+    right: 0,
+    paddingHorizontal: 20,
+    paddingTop: 10,
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.7)',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   title: {
     fontSize: 30,
@@ -155,7 +204,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   modalTitle: {
-    fontSize: 22,
+    fontSize: 26,
     fontWeight: 'bold',
     marginBottom: 10,
     color: '#024802',

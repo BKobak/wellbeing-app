@@ -6,6 +6,12 @@ export default function NewProfile() {
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+
+  // Placeholder states
+  const [usernamePlaceholder, setUsernamePlaceholder] = useState('Username');
+  const [emailPlaceholder, setEmailPlaceholder] = useState('Email');
+  const [passwordPlaceholder, setPasswordPlaceholder] = useState('Password');
+
   const navigation = useNavigation();
 
   const handleCreateProfile = () => {
@@ -20,32 +26,42 @@ export default function NewProfile() {
   return (
     <View style={styles.container}>
       <Text style={styles.header}>Create New Profile</Text>
+
       <View style={styles.inputView}>
         <TextInput
           style={styles.TextInput}
-          placeholder="Username"
+          placeholder={usernamePlaceholder}
           placeholderTextColor="#003f5c"
           onChangeText={setUsername}
+          onFocus={() => setUsernamePlaceholder('')}
+          onBlur={() => username === '' && setUsernamePlaceholder('Username')}
         />
       </View>
+
       <View style={styles.inputView}>
         <TextInput
           style={styles.TextInput}
-          placeholder="Email"
+          placeholder={emailPlaceholder}
           placeholderTextColor="#003f5c"
           keyboardType="email-address"
           onChangeText={setEmail}
+          onFocus={() => setEmailPlaceholder('')}
+          onBlur={() => email === '' && setEmailPlaceholder('Email')}
         />
       </View>
+
       <View style={styles.inputView}>
         <TextInput
           style={styles.TextInput}
-          placeholder="Password"
+          placeholder={passwordPlaceholder}
           placeholderTextColor="#003f5c"
           secureTextEntry={true}
           onChangeText={setPassword}
+          onFocus={() => setPasswordPlaceholder('')}
+          onBlur={() => password === '' && setPasswordPlaceholder('Password')}
         />
       </View>
+
       <TouchableOpacity style={styles.createBtn} onPress={handleCreateProfile}>
         <Text style={styles.createText}>Create Profile</Text>
       </TouchableOpacity>

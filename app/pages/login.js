@@ -1,64 +1,72 @@
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
-import React, { use } from 'react';
-import { TextInput } from 'react-native';
-import { useState } from 'react';
-import { TouchableOpacity } from 'react-native';
+import { StyleSheet, Text, View, TextInput, TouchableOpacity } from 'react-native';
+import React, { useState } from 'react';
 import { useNavigation } from '@react-navigation/native';
 
 export default function LogIn() {
-    const [username, setUsername] = useState('');
-    const [password, setPassword] = useState('');
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
 
-    const navigation = useNavigation();
+  // Placeholder states
+  const [usernamePlaceholder, setUsernamePlaceholder] = useState('Username');
+  const [passwordPlaceholder, setPasswordPlaceholder] = useState('Password');
 
-    const handleLogin = () => {
-        if (username === 'Admin' && password === 'Admin') {
-        navigation.navigate('Home');
-        }
-        else {
-        alert('Invalid username or password');
-        }
-    };
+  const navigation = useNavigation();
 
-    const forgotPassword = () => {
-        navigation.navigate('ForgotPassword');
-    };
+  const handleLogin = () => {
+    if (username === 'Admin' && password === 'Admin') {
+      navigation.navigate('Home');
+    } else {
+      alert('Invalid username or password');
+    }
+  };
 
-    const createProfile = () => {
-        navigation.navigate('CreateProfile');
-    };
+  const forgotPassword = () => {
+    navigation.navigate('ForgotPassword');
+  };
+
+  const createProfile = () => {
+    navigation.navigate('CreateProfile');
+  };
 
   return (
     <View style={styles.container}>
       <StatusBar style="auto" />
       <Text style={styles.header}>WELCOME</Text>
+
       <View style={styles.inputView}>
         <TextInput
           style={styles.TextInput}
-          placeholder="username"
+          placeholder={usernamePlaceholder}
           placeholderTextColor="#003f5c"
-          onChangeText={(username) => setUsername(username)}
-        /> 
-      </View> 
+          onChangeText={setUsername}
+          onFocus={() => setUsernamePlaceholder('')}
+          onBlur={() => username === '' && setUsernamePlaceholder('Username')}
+        />
+      </View>
+
       <View style={styles.inputView}>
         <TextInput
           style={styles.TextInput}
-          placeholder="password"
+          placeholder={passwordPlaceholder}
           placeholderTextColor="#003f5c"
           secureTextEntry={true}
-          onChangeText={(password) => setPassword(password)}
-        /> 
+          onChangeText={setPassword}
+          onFocus={() => setPasswordPlaceholder('')}
+          onBlur={() => password === '' && setPasswordPlaceholder('Password')}
+        />
       </View>
 
       <TouchableOpacity onPress={forgotPassword}>
-        <Text style={styles.forgot_button}>Forgot Password?</Text> 
-      </TouchableOpacity> 
-      <TouchableOpacity style={styles.loginBtn} onPress={handleLogin}>
-        <Text style={styles.loginText}>LOGIN</Text> 
+        <Text style={styles.forgot_button}>Forgot Password?</Text>
       </TouchableOpacity>
+
+      <TouchableOpacity style={styles.loginBtn} onPress={handleLogin}>
+        <Text style={styles.loginText}>LOGIN</Text>
+      </TouchableOpacity>
+
       <TouchableOpacity style={styles.loginBtn} onPress={createProfile}>
-        <Text style={styles.loginText}>CREATE NEW PROFILE</Text> 
+        <Text style={styles.loginText}>CREATE NEW PROFILE</Text>
       </TouchableOpacity>
     </View>
   );
@@ -86,7 +94,8 @@ const styles = StyleSheet.create({
     width: '70%',
     height: 60,
     marginBottom: 20,
-    alignItems: 'center',
+    justifyContent: 'center',
+    paddingLeft: 15,
   },
   header: {
     fontSize: 50,
@@ -108,7 +117,6 @@ const styles = StyleSheet.create({
     width: '45%',
     borderRadius: 25,
     height: 50,
-    textAlign: 'center',
     alignItems: 'center',
     justifyContent: 'center',
     marginTop: 20,
@@ -118,5 +126,5 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: 'bold',
     color: '#fff',
-  }
+  },
 });
