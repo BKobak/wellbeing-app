@@ -69,7 +69,7 @@ const HomeScreen = ({ navigation }) => {
       </View>
 
       <Text style={styles.title}>Migraine & Headache Diary</Text>
-      <Text style={styles.subtitle}>Track your symptoms, triggers, and relief methods</Text>
+      <Text style={styles.subtitle}>Track your symptoms and relief methods</Text>
 
       <TouchableOpacity style={styles.button} onPress={() => setModalVisible(true)}>
         <Text style={styles.buttonText}>Log New Entry</Text>
@@ -208,16 +208,17 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   title: {
-    fontSize: 30,
+    fontSize: 35,
     fontWeight: 'bold',
     marginBottom: 10,
     color: '#024802',
+    textAlign: 'center',
   },
   subtitle: {
     fontSize: 18,
     color: '#555',
     textAlign: 'center',
-    marginBottom: 20,
+    marginBottom: 30,
   },
   button: {
     backgroundColor: '#C195FF',
