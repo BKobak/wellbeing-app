@@ -1,13 +1,15 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, Modal, StyleSheet } from 'react-native';
+import { View, Text, TouchableOpacity, Modal, StyleSheet, ScrollView } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome'; 
 import SegmentedControl from '@react-native-segmented-control/segmented-control';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const HomeScreen = ({ navigation }) => {
   const [modalVisible, setModalVisible] = useState(false);
+  const [historyModalVisible, setHistoryModalVisible] = useState(false);
   const [entryType, setEntryType] = useState('Headache'); 
   const [selectedSymptoms, setSelectedSymptoms] = useState([]);
+  const [logs, setLogs] = useState([]); // Store log history
 
   const symptomsList = [
     { id: 'headache', name: 'Headache', icon: 'medkit' },
@@ -45,6 +47,10 @@ const HomeScreen = ({ navigation }) => {
     } catch (error) {
         console.error("Error saving log:", error);
     }
+
+    // Reset symptoms and close the modal
+    setSelectedSymptoms([]);  // Clears previous symptoms
+    setModalVisible(false);
 };
 
   return (
@@ -69,7 +75,17 @@ const HomeScreen = ({ navigation }) => {
         <Text style={styles.buttonText}>Log New Entry</Text>
       </TouchableOpacity>
 
-      <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('History')}>
+      <TouchableOpacity
+        style={styles.button}
+        onPress={async () => {
+          try {
+            const storedLogs = await AsyncStorage.getItem('logs');
+            setLogs(storedLogs ? JSON.parse(storedLogs) : []);
+          } catch (error) {
+            console.error('Error loading logs:', error);
+          }
+          setHistoryModalVisible(true);
+        }}>
         <Text style={styles.buttonText}>View History</Text>
       </TouchableOpacity>
 
@@ -77,7 +93,7 @@ const HomeScreen = ({ navigation }) => {
         <Text style={styles.buttonText}>Settings</Text>
       </TouchableOpacity>
 
-      {/* Pop-up Modal */}
+      {/* Pop-up Modal for New Logs*/}
       <Modal animationType="slide" transparent={true} visible={modalVisible}>
         <View style={styles.modalOverlay}>
           <View style={styles.modalContent}>
@@ -127,6 +143,32 @@ const HomeScreen = ({ navigation }) => {
             </TouchableOpacity>
 
             <TouchableOpacity style={styles.closeButton} onPress={() => setModalVisible(false)}>
+              <Text style={styles.closeButtonText}>Close</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
+
+      {/* History Modal */}
+      <Modal animationType="slide" transparent={true} visible={historyModalVisible}>
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalTitle}>History</Text>
+            <ScrollView style={{ maxHeight: 300 }}>
+              {logs.length > 0 ? (
+                logs.map((log, index) => (
+                  <View key={index} style={styles.historyItem}>
+                    <Text style={styles.historyText}>📝 {log.type}</Text>
+                    <Text style={styles.historyText}>🕒 {new Date(log.timestamp).toLocaleString()}</Text>
+                    <Text style={styles.historyText}>⚠️ Symptoms: {log.symptoms.join(', ')}</Text>
+                  </View>
+                ))
+              ) : (
+                <Text style={{ textAlign: 'center', color: '#555' }}>No logs available</Text>
+              )}
+            </ScrollView>
+
+            <TouchableOpacity style={styles.closeButton} onPress={() => setHistoryModalVisible(false)}>
               <Text style={styles.closeButtonText}>Close</Text>
             </TouchableOpacity>
           </View>
@@ -254,6 +296,17 @@ const styles = StyleSheet.create({
     color: '#C195FF',
     fontSize: 16,
     fontWeight: 'bold',
+  },
+  historyItem: { 
+    backgroundColor: '#EDE7FF',
+    padding: 10, 
+    borderRadius: 10, 
+    marginVertical: 5 
+  },
+  historyText: { 
+    fontSize: 16, 
+    color: '#333', 
+    marginVertical: 2 
   },
 });
 
