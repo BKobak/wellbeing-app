@@ -1,14 +1,22 @@
-import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
+import React, { useState, useRef } from 'react';
+import {
+  View,
+  Text,
+  TextInput,
+  StyleSheet,
+  Animated,
+  Pressable,
+} from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import Ionicons from 'react-native-vector-icons/Ionicons';
+import { StatusBar } from 'expo-status-bar';
 
 const ForgotPasswordScreen = () => {
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-  const [newPasswordPlaceholder, setNewPasswordPlaceholder] = useState('New Password');
-  const [confirmPasswordPlaceholder, setConfirmPasswordPlaceholder] = useState('Confirm Password');
 
   const navigation = useNavigation();
+  const scaleAnim = useRef(new Animated.Value(1)).current;
 
   const handleResetPassword = () => {
     if (newPassword === confirmPassword && newPassword.length >= 6) {
@@ -19,38 +27,54 @@ const ForgotPasswordScreen = () => {
     }
   };
 
+  const animatePress = () => {
+    Animated.sequence([
+      Animated.timing(scaleAnim, {
+        toValue: 0.95,
+        duration: 100,
+        useNativeDriver: true,
+      }),
+      Animated.timing(scaleAnim, {
+        toValue: 1,
+        duration: 100,
+        useNativeDriver: true,
+      }),
+    ]).start(() => handleResetPassword());
+  };
+
   return (
     <View style={styles.container}>
+      <StatusBar style="light" />
       <Text style={styles.header}>Reset Password</Text>
       <Text style={styles.subtitle}>Enter a new password for your account</Text>
-      
+
       <View style={styles.inputView}>
+        <Ionicons name="lock-closed-outline" size={24} color="#024802" style={styles.icon} />
         <TextInput
           style={styles.input}
-          placeholder={newPasswordPlaceholder}
+          placeholder="New Password"
           placeholderTextColor="#003f5c"
           secureTextEntry
           onChangeText={setNewPassword}
-          onFocus={() => setNewPasswordPlaceholder('')}
-          onBlur={() => newPassword === '' && setNewPasswordPlaceholder('New Password')}
         />
       </View>
 
       <View style={styles.inputView}>
+        <Ionicons name="lock-closed-outline" size={24} color="#024802" style={styles.icon} />
         <TextInput
           style={styles.input}
-          placeholder={confirmPasswordPlaceholder}
+          placeholder="Confirm Password"
           placeholderTextColor="#003f5c"
           secureTextEntry
           onChangeText={setConfirmPassword}
-          onFocus={() => setConfirmPasswordPlaceholder('')}
-          onBlur={() => confirmPassword === '' && setConfirmPasswordPlaceholder('Confirm Password')}
         />
       </View>
 
-      <TouchableOpacity style={styles.button} onPress={handleResetPassword}>
-        <Text style={styles.buttonText}>Submit</Text>
-      </TouchableOpacity>
+      <Animated.View style={{ transform: [{ scale: scaleAnim }] }}>
+        <Pressable style={styles.button} onPress={animatePress}>
+          <Text style={styles.buttonText}>Submit</Text>
+        </Pressable>
+      </Animated.View>
     </View>
   );
 };
@@ -58,60 +82,66 @@ const ForgotPasswordScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: 20,
     backgroundColor: '#DAC0FF',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 20,
   },
   header: {
-    fontSize: 28,
-    fontWeight: 'bold',
+    fontSize: 32,
+    fontWeight: '800',
     color: '#024802',
     marginBottom: 10,
-    textShadowColor: '#171717',
+    textShadowColor: '#BBAFFF',
     textShadowOffset: { width: 2, height: 2 },
-    textShadowRadius: 3,
+    textShadowRadius: 4,
+    letterSpacing: 1.5,
   },
   subtitle: {
     fontSize: 16,
-    color: '#555',
+    color: '#333',
     textAlign: 'center',
-    marginBottom: 20,
+    marginBottom: 25,
+    width: '80%',
   },
   inputView: {
-    backgroundColor: 'white',
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#fff',
     borderRadius: 30,
-    width: '80%',
-    height: 50,
-    marginBottom: 15,
-    justifyContent: 'center',
-    paddingHorizontal: 15,
+    width: '85%',
+    height: 55,
+    marginBottom: 25,
+    paddingHorizontal: 20,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 3,
-    elevation: 2,
+    shadowOpacity: 0.1,
+    shadowOffset: { width: 0, height: 3 },
+    shadowRadius: 5,
+  },
+  icon: {
+    marginRight: 10,
   },
   input: {
+    flex: 1,
     fontSize: 16,
     color: '#024802',
+    fontWeight: '600',
   },
   button: {
+    width: 200,
     backgroundColor: '#C195FF',
-    paddingVertical: 12,
-    paddingHorizontal: 20,
-    borderRadius: 25,
-    width: '50%',
+    borderRadius: 30,
+    height: 55,
     alignItems: 'center',
+    justifyContent: 'center',
     marginTop: 20,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.2,
-    shadowRadius: 3,
-    elevation: 2,
+    shadowOffset: { width: 0, height: 4 },
+    shadowRadius: 5,
   },
   buttonText: {
-    color: 'white',
+    color: '#fff',
     fontSize: 18,
     fontWeight: 'bold',
   },

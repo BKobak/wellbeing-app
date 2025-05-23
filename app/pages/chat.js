@@ -1,24 +1,43 @@
-import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, Modal, StyleSheet, TextInput, ScrollView } from 'react-native';
+import React, { useState, useRef, useEffect } from 'react';
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  StyleSheet,
+  TextInput,
+  ScrollView,
+  KeyboardAvoidingView,
+  Platform,
+} from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
+import { getGPTResponse } from "./chatbotAPI" ;
+
 
 const ChatbotScreen = ({ navigation }) => {
   const [messages, setMessages] = useState([
     { id: 1, text: "Hello! What can I help you with?", sender: "bot" },
   ]);
   const [inputText, setInputText] = useState('');
+  const scrollViewRef = useRef(null);
 
-  const handleSend = () => {
+  const handleSend = async () => {
     if (inputText.trim() === '') return;
-    
+  
     const newMessage = { id: messages.length + 1, text: inputText, sender: "user" };
     setMessages([...messages, newMessage]);
     setInputText('');
-
-    setTimeout(() => {
-      setMessages((prevMessages) => [...prevMessages, { id: prevMessages.length + 1, text: "I'm still learning!", sender: "bot" }]);
-    }, 1000);
+  
+    const botReply = await getGPTResponse(inputText);
+  
+    setMessages((prevMessages) => [
+      ...prevMessages,
+      { id: prevMessages.length + 1, text: botReply, sender: "bot" }
+    ]);
   };
+
+  useEffect(() => {
+    scrollViewRef.current?.scrollToEnd({ animated: true });
+  }, [messages]);
 
   return (
     <View style={styles.container}>
@@ -28,37 +47,48 @@ const ChatbotScreen = ({ navigation }) => {
           <Icon name="arrow-left" size={24} color="#fff" />
         </TouchableOpacity>
         <Text style={styles.navTitle}>Chatbot</Text>
-        <Icon name="robot" size={24} color="#fff" />
+        <Icon name="android" size={24} color="#fff" />
       </View>
 
       {/* Chat Area */}
-      <ScrollView style={styles.chatContainer}>
-        {messages.map((message) => (
-          <View
-            key={message.id}
-            style={[
-              styles.messageBubble,
-              message.sender === 'user' ? styles.userMessage : styles.botMessage,
-            ]}
-          >
-            <Text style={styles.messageText}>{message.text}</Text>
-          </View>
-        ))}
-      </ScrollView>
+      <KeyboardAvoidingView
+        style={{ flex: 1 }}
+        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+        keyboardVerticalOffset={80}
+      >
+        <ScrollView
+          ref={scrollViewRef}
+          style={styles.chatContainer}
+          contentContainerStyle={{ paddingBottom: 80 }}
+        >
+          {messages.map((message) => (
+            <View
+              key={message.id}
+              style={[
+                styles.messageBubble,
+                message.sender === 'user' ? styles.userMessage : styles.botMessage,
+              ]}
+            >
+              <Text style={styles.messageText}>{message.text}</Text>
+            </View>
+          ))}
+        </ScrollView>
 
-      {/* Input Area */}
-      <View style={styles.inputContainer}>
-        <TextInput
-          style={styles.input}
-          placeholder="Type a message..."
-          placeholderTextColor="#AFAFAF"
-          value={inputText}
-          onChangeText={setInputText}
-        />
-        <TouchableOpacity style={styles.sendButton} onPress={handleSend}>
-          <Icon name="paper-plane" size={20} color="#fff" />
-        </TouchableOpacity>
-      </View>
+        {/* Input Area */}
+        <View style={styles.inputContainer}>
+          <TextInput
+            style={styles.input}
+            placeholder="Type a message..."
+            placeholderTextColor="#AFAFAF"
+            value={inputText}
+            onChangeText={setInputText}
+            multiline
+          />
+          <TouchableOpacity style={styles.sendButton} onPress={handleSend}>
+            <Icon name="paper-plane" size={20} color="#fff" />
+          </TouchableOpacity>
+        </View>
+      </KeyboardAvoidingView>
     </View>
   );
 };
@@ -87,9 +117,9 @@ const styles = StyleSheet.create({
   },
   messageBubble: {
     maxWidth: '75%',
-    padding: 10,
-    marginVertical: 5,
-    borderRadius: 15,
+    padding: 12,
+    marginVertical: 6,
+    borderRadius: 20,
   },
   userMessage: {
     alignSelf: 'flex-end',
@@ -100,29 +130,35 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
   },
   messageText: {
-    fontSize: 16,
+    fontSize: 18,
     color: '#000',
   },
   inputContainer: {
+    position: 'absolute',
+    bottom: 35,
+    left: 15,
+    right: 15,
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: '#fff',
-    padding: 10,
-    borderTopWidth: 1,
-    borderColor: '#ddd'
+    borderRadius: 30,
+    paddingHorizontal: 15,
+    paddingVertical: 10,
+    shadowColor: '#000',
+    shadowOpacity: 0.1,
+    shadowOffset: { width: 0, height: 2 },
+    shadowRadius: 5,
+    elevation: 4,
   },
   input: {
     flex: 1,
-    height: 40,
-    borderWidth: 1,
-    borderColor: '#AFAFAF',
-    borderRadius: 20,
-    paddingHorizontal: 15,
+    maxHeight: 80,
+    fontSize: 18,
     color: '#000',
-    backgroundColor: '#fff',
+    paddingRight: 10,
+    left: 10,
   },
   sendButton: {
-    marginLeft: 10,
     backgroundColor: '#5A189A',
     padding: 10,
     borderRadius: 20,

@@ -1,18 +1,24 @@
-import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
+import React, { useState, useRef } from 'react';
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  StyleSheet,
+  Animated,
+  Pressable,
+} from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import Ionicons from 'react-native-vector-icons/Ionicons';
+import { StatusBar } from 'expo-status-bar';
 
 export default function NewProfile() {
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
-  // Placeholder states
-  const [usernamePlaceholder, setUsernamePlaceholder] = useState('Username');
-  const [emailPlaceholder, setEmailPlaceholder] = useState('Email');
-  const [passwordPlaceholder, setPasswordPlaceholder] = useState('Password');
-
   const navigation = useNavigation();
+  const scaleAnim = useRef(new Animated.Value(1)).current;
 
   const handleCreateProfile = () => {
     if (username && email && password) {
@@ -23,48 +29,63 @@ export default function NewProfile() {
     }
   };
 
+  const animateCreatePress = () => {
+    Animated.sequence([
+      Animated.timing(scaleAnim, {
+        toValue: 0.95,
+        duration: 100,
+        useNativeDriver: true,
+      }),
+      Animated.timing(scaleAnim, {
+        toValue: 1,
+        duration: 100,
+        useNativeDriver: true,
+      }),
+    ]).start(() => handleCreateProfile());
+  };
+
   return (
     <View style={styles.container}>
+      <StatusBar style="light" />
       <Text style={styles.header}>Create New Profile</Text>
 
       <View style={styles.inputView}>
+        <Ionicons name="person-outline" size={24} color="#024802" style={styles.icon} />
         <TextInput
           style={styles.TextInput}
-          placeholder={usernamePlaceholder}
+          placeholder="Username"
           placeholderTextColor="#003f5c"
           onChangeText={setUsername}
-          onFocus={() => setUsernamePlaceholder('')}
-          onBlur={() => username === '' && setUsernamePlaceholder('Username')}
         />
       </View>
 
       <View style={styles.inputView}>
+        <Ionicons name="mail-outline" size={24} color="#024802" style={styles.icon} />
         <TextInput
           style={styles.TextInput}
-          placeholder={emailPlaceholder}
+          placeholder="Email"
           placeholderTextColor="#003f5c"
           keyboardType="email-address"
           onChangeText={setEmail}
-          onFocus={() => setEmailPlaceholder('')}
-          onBlur={() => email === '' && setEmailPlaceholder('Email')}
         />
       </View>
 
       <View style={styles.inputView}>
+        <Ionicons name="lock-closed-outline" size={24} color="#024802" style={styles.icon} />
         <TextInput
           style={styles.TextInput}
-          placeholder={passwordPlaceholder}
+          placeholder="Password"
           placeholderTextColor="#003f5c"
-          secureTextEntry={true}
+          secureTextEntry
           onChangeText={setPassword}
-          onFocus={() => setPasswordPlaceholder('')}
-          onBlur={() => password === '' && setPasswordPlaceholder('Password')}
         />
       </View>
 
-      <TouchableOpacity style={styles.createBtn} onPress={handleCreateProfile}>
-        <Text style={styles.createText}>Create Profile</Text>
-      </TouchableOpacity>
+      <Animated.View style={{ transform: [{ scale: scaleAnim }] }}>
+        <Pressable style={styles.createBtn} onPress={animateCreatePress}>
+          <Text style={styles.createText}>Create Profile</Text>
+        </Pressable>
+      </Animated.View>
     </View>
   );
 }
@@ -72,38 +93,57 @@ export default function NewProfile() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: '#F4ECFF',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#f8f9fa',
+    paddingHorizontal: 20,
+    paddingBottom: 60,
   },
   header: {
-    fontSize: 30,
+    fontSize: 36,
     marginBottom: 30,
     color: '#024802',
-    fontWeight: 'bold',
+    fontWeight: '900',
+    textAlign: 'center',
+    textShadowColor: '#DAC0FF',
+    textShadowOffset: { width: 2, height: 2 },
+    textShadowRadius: 4,
+    letterSpacing: 1.5,
   },
   inputView: {
+    flexDirection: 'row',
+    alignItems: 'center',
     backgroundColor: '#DAC0FF',
     borderRadius: 30,
-    width: '80%',
-    height: 50,
-    marginBottom: 20,
-    justifyContent: 'center',
-    paddingLeft: 15,
+    width: '85%',
+    height: 55,
+    marginBottom: 25,
+    paddingHorizontal: 20,
+    shadowColor: '#000',
+    shadowOpacity: 0.1,
+    shadowOffset: { width: 0, height: 3 },
+    shadowRadius: 5,
+  },
+  icon: {
+    marginRight: 10,
   },
   TextInput: {
+    flex: 1,
     fontSize: 18,
-    fontWeight: 'bold',
     color: '#024802',
+    fontWeight: '600',
   },
   createBtn: {
-    width: '50%',
-    borderRadius: 25,
-    height: 50,
+    width: 250,
+    backgroundColor: '#C195FF',
+    borderRadius: 30,
+    height: 55,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#C195FF',
-    marginTop: 20,
+    shadowColor: '#000',
+    shadowOpacity: 0.2,
+    shadowOffset: { width: 0, height: 4 },
+    shadowRadius: 5,
   },
   createText: {
     fontSize: 18,

@@ -1,17 +1,23 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View, TextInput, TouchableOpacity } from 'react-native';
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
+import {
+  StyleSheet,
+  Text,
+  View,
+  TextInput,
+  TouchableOpacity,
+  Animated,
+  Pressable,
+} from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import { StatusBar } from 'expo-status-bar';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 
 export default function LogIn() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-
-  // Placeholder states
-  const [usernamePlaceholder, setUsernamePlaceholder] = useState('Username');
-  const [passwordPlaceholder, setPasswordPlaceholder] = useState('Password');
-
   const navigation = useNavigation();
+
+  const scaleAnim = useRef(new Animated.Value(1)).current;
 
   const handleLogin = () => {
     if (username === 'Admin' && password === 'Admin') {
@@ -21,52 +27,60 @@ export default function LogIn() {
     }
   };
 
-  const forgotPassword = () => {
-    navigation.navigate('ForgotPassword');
-  };
-
-  const createProfile = () => {
-    navigation.navigate('CreateProfile');
+  const animateLoginPress = () => {
+    Animated.sequence([
+      Animated.timing(scaleAnim, {
+        toValue: 0.95,
+        duration: 100,
+        useNativeDriver: true,
+      }),
+      Animated.timing(scaleAnim, {
+        toValue: 1,
+        duration: 100,
+        useNativeDriver: true,
+      }),
+    ]).start(() => handleLogin());
   };
 
   return (
     <View style={styles.container}>
-      <StatusBar style="auto" />
-      <Text style={styles.header}>WELCOME</Text>
+      <StatusBar style="light" />
+
+      <Text style={styles.header}>Welcome</Text>
 
       <View style={styles.inputView}>
+        <Ionicons name="person-outline" size={24} color="#024802" style={styles.icon} />
         <TextInput
           style={styles.TextInput}
-          placeholder={usernamePlaceholder}
+          placeholder="Username"
           placeholderTextColor="#003f5c"
           onChangeText={setUsername}
-          onFocus={() => setUsernamePlaceholder('')}
-          onBlur={() => username === '' && setUsernamePlaceholder('Username')}
         />
       </View>
 
       <View style={styles.inputView}>
+        <Ionicons name="lock-closed-outline" size={24} color="#024802" style={styles.icon} />
         <TextInput
           style={styles.TextInput}
-          placeholder={passwordPlaceholder}
+          placeholder="Password"
           placeholderTextColor="#003f5c"
-          secureTextEntry={true}
+          secureTextEntry
           onChangeText={setPassword}
-          onFocus={() => setPasswordPlaceholder('')}
-          onBlur={() => password === '' && setPasswordPlaceholder('Password')}
         />
       </View>
 
-      <TouchableOpacity onPress={forgotPassword}>
+      <TouchableOpacity onPress={() => navigation.navigate('ForgotPassword')}>
         <Text style={styles.forgot_button}>Forgot Password?</Text>
       </TouchableOpacity>
 
-      <TouchableOpacity style={styles.loginBtn} onPress={handleLogin}>
-        <Text style={styles.loginText}>LOGIN</Text>
-      </TouchableOpacity>
+      <Animated.View style={{ transform: [{ scale: scaleAnim }] }}>
+        <Pressable style={styles.loginBtn} onPress={animateLoginPress}>
+          <Text style={styles.loginText}>Login</Text>
+        </Pressable>
+      </Animated.View>
 
-      <TouchableOpacity style={styles.loginBtn} onPress={createProfile}>
-        <Text style={styles.loginText}>CREATE NEW PROFILE</Text>
+      <TouchableOpacity style={styles.secondaryBtn} onPress={() => navigation.navigate('CreateProfile')}>
+        <Text style={styles.secondaryText}>Create New Profile</Text>
       </TouchableOpacity>
     </View>
   );
@@ -75,56 +89,82 @@ export default function LogIn() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '',
+    backgroundColor: '#F4ECFF',
     alignItems: 'center',
     justifyContent: 'center',
-  },
-  TextInput: {
-    height: 50,
-    flex: 1,
-    padding: 10,
-    marginLeft: 10,
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: '#024802',
-  },
-  inputView: {
-    backgroundColor: '#DAC0FF',
-    borderRadius: 30,
-    width: '70%',
-    height: 60,
-    marginBottom: 20,
-    justifyContent: 'center',
-    paddingLeft: 15,
+    paddingHorizontal: 20,
   },
   header: {
-    fontSize: 50,
+    fontSize: 42,
     marginBottom: 40,
     color: '#024802',
-    fontWeight: 'bold',
-    textShadowColor: '#171717',
-    textShadowOffset: { width: 3, height: 3 },
-    textShadowRadius: 5,
+    fontWeight: '900',
+    textShadowColor: '#DAC0FF',
+    textShadowOffset: { width: 2, height: 2 },
+    textShadowRadius: 4,
+    letterSpacing: 2,
   },
-  forgot_button: {
-    height: 30,
-    marginBottom: 30,
+  inputView: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#DAC0FF',
+    borderRadius: 30,
+    width: '85%',
+    height: 55,
+    marginBottom: 15,
+    paddingHorizontal: 20,
+    shadowColor: '#000',
+    shadowOpacity: 0.1,
+    shadowOffset: { width: 0, height: 3 },
+    shadowRadius: 5,
+  },
+  icon: {
+    marginRight: 10,
+  },
+  TextInput: {
+    flex: 1,
     fontSize: 18,
     color: '#024802',
+    fontWeight: '600',
+  },
+  forgot_button: {
+    fontSize: 16,
+    color: '#024802',
     fontWeight: 'bold',
+    marginTop: 10,
+    marginBottom: 25,
   },
   loginBtn: {
-    width: '45%',
-    borderRadius: 25,
-    height: 50,
+    width: 250,
+    backgroundColor: '#C195FF',
+    borderRadius: 30,
+    height: 55,
     alignItems: 'center',
     justifyContent: 'center',
-    marginTop: 20,
-    backgroundColor: '#C195FF',
+    marginBottom: 15,
+    shadowColor: '#000',
+    shadowOpacity: 0.2,
+    shadowOffset: { width: 0, height: 4 },
+    shadowRadius: 5,
   },
   loginText: {
+    color: '#fff',
     fontSize: 18,
     fontWeight: 'bold',
-    color: '#fff',
+  },
+  secondaryBtn: {
+    width: 250,
+    borderRadius: 30,
+    height: 55,
+    borderColor: '#C195FF',
+    borderWidth: 2,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'transparent',
+  },
+  secondaryText: {
+    color: '#C195FF',
+    fontSize: 18,
+    fontWeight: 'bold',
   },
 });

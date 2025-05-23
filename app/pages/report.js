@@ -71,13 +71,13 @@ const ReportScreen = () => {
       });
     });
 
-    // 🔹 **Predict Future Symptoms**
+    // Predict Future Symptoms
     const mostCommonSymptoms = Object.entries(allSymptoms)
       .sort((a, b) => b[1] - a[1])
       .slice(0, 3)
       .map(([symptom]) => symptom);
 
-    // 🔹 **Predict Next Headache/Migraine**
+    // Predict Next Headache/Migraine
     let predictedNextEpisode = 'Insufficient data for prediction';
     if (allEpisodes.length > 1) {
       allEpisodes.sort((a, b) => a - b);

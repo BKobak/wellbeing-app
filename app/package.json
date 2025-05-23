@@ -11,18 +11,26 @@
   },
   "dependencies": {
     "@expo/metro-runtime": "~4.0.1",
+    "@google/genai": "^1.0.1",
+    "@google/generative-ai": "^0.24.1",
     "@react-native-async-storage/async-storage": "^2.1.2",
     "@react-native-segmented-control/segmented-control": "^2.5.7",
     "@react-navigation/native": "^7.0.14",
     "@react-navigation/stack": "^7.1.1",
-    "axios": "^1.8.1",
+    "axios": "^1.9.0",
+    "body-parser": "^2.2.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.5.0",
     "expo": "~52.0.33",
     "expo-dev-client": "~5.0.12",
     "expo-notifications": "^0.29.13",
     "expo-status-bar": "~2.0.1",
+    "express": "^5.1.0",
+    "genai": "^0.0.18",
     "react": "18.3.1",
     "react-dom": "18.3.1",
     "react-native": "^0.76.7",
+    "react-native-animatable": "^1.4.0",
     "react-native-gesture-handler": "^2.24.0",
     "react-native-reanimated": "^3.16.7",
     "react-native-safe-area-context": "^5.2.0",
@@ -33,5 +41,8 @@
   "devDependencies": {
     "@babel/core": "^7.20.0"
   },
-  "private": true
+  "private": true,
+  "keywords": [],
+  "author": "",
+  "description": ""
 }

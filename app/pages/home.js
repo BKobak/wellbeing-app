@@ -184,8 +184,8 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    padding: 20,
-    backgroundColor: '#DAC0FF',
+    padding: 30,
+    backgroundColor: '#F4ECFF',
   },
   navbar: {
     flexDirection: 'row',
@@ -209,8 +209,8 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 35,
-    fontWeight: 'bold',
-    marginBottom: 10,
+    fontWeight: '800',
+    marginBottom: 20,
     color: '#024802',
     textAlign: 'center',
   },
@@ -225,7 +225,7 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     paddingHorizontal: 20,
     borderRadius: 25,
-    marginBottom: 10,
+    marginBottom: 12,
     alignItems: 'center',
   },
   buttonText: {
