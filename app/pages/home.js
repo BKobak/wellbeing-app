@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, Modal, StyleSheet, ScrollView } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, Modal, StyleSheet, ScrollView, Switch } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome'; 
 import SegmentedControl from '@react-native-segmented-control/segmented-control';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -10,6 +10,11 @@ const HomeScreen = ({ navigation }) => {
   const [entryType, setEntryType] = useState('Headache'); 
   const [selectedSymptoms, setSelectedSymptoms] = useState([]);
   const [logs, setLogs] = useState([]); // Store log history
+  const [settingsModalVisible, setSettingsModalVisible] = useState(false);
+  const [isDarkMode, setIsDarkMode] = useState(false);
+  const [notificationsEnabled, setNotificationsEnabled] = useState(true);
+  const [notificationTime, setNotificationTime] = useState('18:00');
+
 
   const symptomsList = [
     { id: 'headache', name: 'Headache', icon: 'medkit' },
@@ -20,6 +25,7 @@ const HomeScreen = ({ navigation }) => {
     { id: 'sound_sensitivity', name: 'Sound Sensitivity', icon: 'volume-up' },
   ];
 
+  // Toggle symptom selection
   const toggleSymptom = (id) => {
     setSelectedSymptoms((prevSymptoms) =>
       prevSymptoms.includes(id)
@@ -28,6 +34,7 @@ const HomeScreen = ({ navigation }) => {
     );
   };
 
+// Handle saving a new log entry
   const handleSaveEntry = async () => {
     const newEntry = {
         type: entryType,
@@ -51,6 +58,21 @@ const HomeScreen = ({ navigation }) => {
     // Reset symptoms and close the modal
     setSelectedSymptoms([]);  // Clears previous symptoms
     setModalVisible(false);
+};
+
+// Handle deleting a log entry
+const handleDeleteLog = async (timestampToDelete) => {
+  try {
+    const existingLogs = await AsyncStorage.getItem('logs');
+    const logs = existingLogs ? JSON.parse(existingLogs) : [];
+
+    const updatedLogs = logs.filter((log) => log.timestamp !== timestampToDelete);
+    await AsyncStorage.setItem('logs', JSON.stringify(updatedLogs));
+    setLogs(updatedLogs); // Update UI
+  } catch (error) {
+    console.error('Error deleting log:', error);
+    alert('Failed to delete log.');
+  }
 };
 
   return (
@@ -89,9 +111,10 @@ const HomeScreen = ({ navigation }) => {
         <Text style={styles.buttonText}>View History</Text>
       </TouchableOpacity>
 
-      <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Settings')}>
+      <TouchableOpacity style={styles.button} onPress={() => setSettingsModalVisible(true)}>
         <Text style={styles.buttonText}>Settings</Text>
       </TouchableOpacity>
+
 
       {/* Pop-up Modal for New Logs*/}
       <Modal animationType="slide" transparent={true} visible={modalVisible}>
@@ -157,12 +180,16 @@ const HomeScreen = ({ navigation }) => {
             <ScrollView style={{ maxHeight: 300 }}>
               {logs.length > 0 ? (
                 logs.map((log, index) => (
-                  <View key={index} style={styles.historyItem}>
+                  <View key={log.timestamp} style={styles.historyItem}>
                     <Text style={styles.historyText}>📝 {log.type}</Text>
                     <Text style={styles.historyText}>🕒 {new Date(log.timestamp).toLocaleString()}</Text>
-                    <Text style={styles.historyText}>⚠️ Symptoms: {log.symptoms.join(', ')}</Text>
+                    <Text style={styles.historyText}>⚠️ Symptoms: {(log.symptoms && Array.isArray(log.symptoms)) ? log.symptoms.join(', ') : 'None'}</Text>
+                    <TouchableOpacity onPress={() => handleDeleteLog(log.timestamp)}>
+                      <Text style={styles.deleteText}>❌ Delete</Text>
+                    </TouchableOpacity>
                   </View>
                 ))
+                
               ) : (
                 <Text style={{ textAlign: 'center', color: '#555' }}>No logs available</Text>
               )}
@@ -174,6 +201,61 @@ const HomeScreen = ({ navigation }) => {
           </View>
         </View>
       </Modal>
+
+      {/* Settings Modal */}
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={settingsModalVisible}
+        onRequestClose={() => setSettingsModalVisible(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContainer}>
+            <Text style={styles.modalTitle}>Settings</Text>
+
+            {/* Dark Mode Toggle */}
+            <View style={styles.settingItem}>
+              <Text>Dark Mode</Text>
+              <Switch
+                value={isDarkMode}
+                onValueChange={(value) => setIsDarkMode(value)}
+              />
+            </View>
+
+            {/* Notifications Toggle */}
+            <View style={styles.settingItem}>
+              <Text>Notifications</Text>
+              <Switch
+                value={notificationsEnabled}
+                onValueChange={(value) => setNotificationsEnabled(value)}
+              />
+            </View>
+
+            {/* Notification Time */}
+            {notificationsEnabled && (
+              <View style={styles.settingItem}>
+                <Text>Notification Time</Text>
+                <TextInput
+                  style={styles.input}
+                  value={notificationTime}
+                  onChangeText={setNotificationTime}
+                  placeholder="HH:mm"
+                  keyboardType="numeric"
+                />
+              </View>
+            )}
+
+            {/* Close Button */}
+            <TouchableOpacity
+              style={[styles.button, { marginTop: 20 }]}
+              onPress={() => setSettingsModalVisible(false)}
+            >
+              <Text style={styles.buttonText}>Close</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
+
     </View>
   );
 };
@@ -309,6 +391,46 @@ const styles = StyleSheet.create({
     color: '#333', 
     marginVertical: 2 
   },
+  deleteText: {
+    color: '#D00000',
+    fontWeight: 'bold',
+    marginTop: 5,
+    textAlign: 'right',
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  modalContainer: {
+    backgroundColor: '#fff',
+    width: '90%',
+    borderRadius: 10,
+    padding: 20,
+    alignItems: 'stretch',
+  },
+  modalTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    marginBottom: 15,
+    textAlign: 'center',
+  },
+  settingItem: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginVertical: 10,
+  },
+  input: {
+    borderWidth: 1,
+    borderColor: '#ccc',
+    padding: 8,
+    borderRadius: 5,
+    minWidth: 80,
+    textAlign: 'center',
+  },
+  
 });
 
 export default HomeScreen;

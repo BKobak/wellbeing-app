@@ -1,8 +1,11 @@
 import React, { useEffect } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
-import * as Notifications from 'expo-notifications'; // Import Notifications
-import AsyncStorage from '@react-native-async-storage/async-storage'; // Import AsyncStorage
+import * as Notifications from 'expo-notifications';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { navigate } from './pages/navigationRef'; // Import the navigate function
+
+// Screens
 import HomeScreen from './pages/home';
 import LogIn from './pages/login';
 import ForgotPasswordScreen from './pages/password';
@@ -12,68 +15,74 @@ import Report from './pages/report';
 
 const Stack = createStackNavigator();
 
+// Configure how notifications are handled when the app is foregrounded
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldShowAlert: true,
+    shouldPlaySound: false,
+    shouldSetBadge: false,
+  }),
+});
+
 export default function App() {
-  /*
+  // Request permissions
   useEffect(() => {
     const getNotificationPermission = async () => {
       const { status } = await Notifications.requestPermissionsAsync();
-      console.log("Permission Status:", status);
       if (status !== 'granted') {
         alert('Permission for notifications not granted!');
       }
     };
-  
     getNotificationPermission();
-  }, []); // Only run once on app load
+  }, []);
 
+  // Schedule notification
   useEffect(() => {
-    // Schedule daily notification to ask about headache/migraine
     const scheduleNotification = async () => {
+      await Notifications.cancelAllScheduledNotificationsAsync(); // optional: prevent duplicates
       await Notifications.scheduleNotificationAsync({
         content: {
           title: "Daily Check-in",
-          body: "Did you experience any migraine/headache today?", // Custom message
-          data: { type: 'headache-check' }, // Custom data to track response type
+          body: "Did you experience any migraine/headache today?",
+          data: { type: 'headache-check' },
         },
         trigger: {
-          seconds: 10, // Send notification after 10 seconds for quick testing
-          repeats: true, // Repeat daily (for testing, adjust time as needed)
+          hour: 15, // trigger notification at 3:30PM
+          minute: 30,
+          repeats: true,
         },
       });
     };
-
     scheduleNotification();
-  }, []); // Only run once on app load
+  }, []);
 
+  // Handle notification response
   useEffect(() => {
-    // Handle notification response (when user taps on the notification)
-    const handleNotificationResponse = (response) => {
-      const { data } = response;
+    const subscription = Notifications.addNotificationResponseReceivedListener((response) => {
+      const { data } = response.notification.request.content;
+  
       if (data.type === 'headache-check') {
-        // Log the user's response here
+        // Save log (same as before)
         const logEntry = {
           type: 'Headache Check',
-          response: 'User checked in for headache/migraine.', // This could be modified based on user input if available
+          response: 'User tapped the notification.',
           timestamp: new Date().toISOString(),
         };
-
+  
         AsyncStorage.getItem('logs').then((logs) => {
           const updatedLogs = logs ? JSON.parse(logs) : [];
           updatedLogs.push(logEntry);
           AsyncStorage.setItem('logs', JSON.stringify(updatedLogs));
         });
+  
+        // 👉 Navigate to Home
+        navigate('Login'); // Use the navigate function from navigationRef
       }
-    };
-
-    // Add the listener for notification response
-    Notifications.addNotificationResponseReceivedListener(handleNotificationResponse);
-
-    // Cleanup the listener on component unmount
-    return () => {
-      Notifications.removeNotificationResponseReceivedListener(handleNotificationResponse);
-    };
-  }, []); // Only run once when the app starts
-  */
+    });
+  
+    return () => subscription.remove();
+  }, []);
+  
 
   return (
     <NavigationContainer>
@@ -87,4 +96,4 @@ export default function App() {
       </Stack.Navigator>
     </NavigationContainer>
   );
-};
+}

@@ -21,12 +21,22 @@ const ReportScreen = () => {
   }, []);
 
   const generateMonthlyReport = (logs) => {
+    if (!Array.isArray(logs)) {
+      console.warn("Logs is not an array:", logs);
+      return;
+    }
+  
     const report = {};
-
-    logs.forEach((log) => {
+  
+    logs.forEach((log, index) => {
+      if (!log || typeof log !== 'object' || !log.timestamp || !log.type) {
+        console.warn(`Skipping invalid log at index ${index}:`, log);
+        return;
+      }
+  
       const date = new Date(log.timestamp);
       const monthYear = `${date.getMonth() + 1}/${date.getFullYear()}`;
-
+  
       if (!report[monthYear]) {
         report[monthYear] = {
           headacheCount: 0,
@@ -35,26 +45,28 @@ const ReportScreen = () => {
           episodeDates: [],
         };
       }
-
+  
       if (log.type === 'Headache') {
         report[monthYear].headacheCount++;
       } else if (log.type === 'Migraine') {
         report[monthYear].migraineCount++;
       }
-
-      log.symptoms.forEach((symptom) => {
+  
+      const symptoms = Array.isArray(log.symptoms) ? log.symptoms : [];
+      symptoms.forEach((symptom) => {
         if (!report[monthYear].symptomFrequency[symptom]) {
           report[monthYear].symptomFrequency[symptom] = 0;
         }
         report[monthYear].symptomFrequency[symptom]++;
       });
-
+  
       report[monthYear].episodeDates.push(date.getTime());
     });
-
+  
     setMonthlyReport(report);
     generateAIInsights(report);
   };
+  
 
   const generateAIInsights = (summary) => {
     let allSymptoms = {};
