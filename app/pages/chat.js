@@ -19,16 +19,16 @@ const chatFAQ = [
     answer: "Common symptoms of migraine include severe headache, nausea, vomiting, sensitivity to light and sound, and sometimes visual disturbances such as aura.",
   },
   {
-    question: "➜ How to prevent migraine?",
-    answer: "Preventing migraines may involve lifestyle changes such as regular exercise, maintaining a healthy diet, managing stress, avoiding triggers, and possibly medication prescribed by a healthcare provider.",
-  },
-  {
     question: "➜ What are the common triggers for migraine?",
     answer: "Common triggers for migraines include stress, certain foods (like aged cheese, processed meats, and alcohol), hormonal changes, lack of sleep, and environmental factors such as bright lights or strong smells.",
   },
   {
     question: "➜ What is the difference between migraine and headache?",
     answer: "A migraine is a specific type of headache that is often more severe and can be accompanied by other symptoms like nausea and sensitivity to light. Regular headaches are usually less intense and do not have these additional symptoms.",
+  },
+  {
+    question: "➜ How to prevent migraine?",
+    answer: "Preventing migraines may involve lifestyle changes such as regular exercise, maintaining a healthy diet, managing stress, avoiding triggers, and possibly medication prescribed by a healthcare provider.",
   },
   {
     question: "➜ Can migraines be cured?",
@@ -116,6 +116,7 @@ const ChatbotScreen = ({ navigation }) => {
                 message.sender === 'user' ? styles.userMessage : styles.botMessage
               ]}
             >
+              
               <ViewMoreText
                 renderViewMore={onPress => <Text style={{ color: '#5A189A' }} onPress={onPress}>View More</Text>}
                 renderViewLess={onPress => <Text style={{ color: '#5A189A' }} onPress={onPress}>View Less</Text>}
@@ -178,7 +179,7 @@ const styles = StyleSheet.create({
     padding: 25,
   },
   messageBubble: {
-    width: '85%',
+    maxWidth: '85%',
     padding: 20,
     marginVertical: 6,
     borderRadius: 20,

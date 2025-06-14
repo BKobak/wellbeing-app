@@ -7,16 +7,15 @@ import {
   TouchableOpacity,
   Animated,
   Pressable,
+  Image
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import { StatusBar } from 'expo-status-bar';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 
 export default function LogIn() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const navigation = useNavigation();
-
   const scaleAnim = useRef(new Animated.Value(1)).current;
 
   const handleLogin = () => {
@@ -26,11 +25,10 @@ export default function LogIn() {
       alert('Invalid username or password');
     }
   };
-
   const animateLoginPress = () => {
     Animated.sequence([
       Animated.timing(scaleAnim, {
-        toValue: 0.95,
+        toValue: 0.9,
         duration: 100,
         useNativeDriver: true,
       }),
@@ -39,14 +37,19 @@ export default function LogIn() {
         duration: 100,
         useNativeDriver: true,
       }),
-    ]).start(() => handleLogin());
+    ]).start(handleLogin);
   };
 
-  return (
-    <View style={styles.container}>
-      <StatusBar style="light" />
 
-      <Text style={styles.header}>Welcome</Text>
+  return (
+      <View style={styles.container}>
+      
+      <Image 
+        source={require('../assets/logo.png')} 
+        style={{ width: 230, height: 230, marginTop: -30, tintColor: '#5A189A', resizeMode: 'contain', marginBottom: 20, position: 'absolute', top: 80, opacity: 0.8 }}
+      />
+
+      <Text style={styles.header}>Relief Nest</Text>
 
       <View style={styles.inputView}>
         <Ionicons name="person-outline" size={24} color="#024802" style={styles.icon} />
@@ -69,10 +72,6 @@ export default function LogIn() {
         />
       </View>
 
-      <TouchableOpacity onPress={() => navigation.navigate('ForgotPassword')}>
-        <Text style={styles.forgot_button}>Forgot Password?</Text>
-      </TouchableOpacity>
-
       <Animated.View style={{ transform: [{ scale: scaleAnim }] }}>
         <Pressable style={styles.loginBtn} onPress={animateLoginPress}>
           <Text style={styles.loginText}>Login</Text>
@@ -82,7 +81,11 @@ export default function LogIn() {
       <TouchableOpacity style={styles.secondaryBtn} onPress={() => navigation.navigate('CreateProfile')}>
         <Text style={styles.secondaryText}>Create New Profile</Text>
       </TouchableOpacity>
-    </View>
+
+      <TouchableOpacity onPress={() => navigation.navigate('ForgotPassword')}>
+        <Text style={styles.forgot_button}>Forgot Password?</Text>
+      </TouchableOpacity>
+      </View>
   );
 }
 
@@ -96,6 +99,7 @@ const styles = StyleSheet.create({
   },
   header: {
     fontSize: 42,
+    marginTop: 130,
     marginBottom: 40,
     color: '#024802',
     fontWeight: '900',
@@ -103,6 +107,13 @@ const styles = StyleSheet.create({
     textShadowOffset: { width: 2, height: 2 },
     textShadowRadius: 4,
     letterSpacing: 2,
+    shadowColor: '#000',
+    shadowOpacity: 0.3,
+    shadowOffset: { width: 3, height: 2 },
+    shadowRadius: 1,
+    fontStyle: 'italic',
+    fontFamily: ''
+
   },
   inputView: {
     flexDirection: 'row',
@@ -126,6 +137,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
     color: '#024802',
     fontWeight: '600',
+    paddingVertical: 10,
   },
   forgot_button: {
     fontSize: 16,
@@ -135,12 +147,13 @@ const styles = StyleSheet.create({
     marginBottom: 25,
   },
   loginBtn: {
-    width: 250,
+    width: 230,
     backgroundColor: '#C195FF',
     borderRadius: 30,
     height: 55,
     alignItems: 'center',
     justifyContent: 'center',
+    marginTop: 25,
     marginBottom: 15,
     shadowColor: '#000',
     shadowOpacity: 0.2,
@@ -153,7 +166,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   secondaryBtn: {
-    width: 250,
+    width: 230,
     borderRadius: 30,
     height: 55,
     borderColor: '#C195FF',

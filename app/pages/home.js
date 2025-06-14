@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect} from 'react';
 import { View, Text, TextInput, TouchableOpacity, Modal, StyleSheet, ScrollView, Switch } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome'; 
 import SegmentedControl from '@react-native-segmented-control/segmented-control';
@@ -12,8 +12,31 @@ const HomeScreen = ({ navigation }) => {
   const [logs, setLogs] = useState([]); // Store log history
   const [settingsModalVisible, setSettingsModalVisible] = useState(false);
   const [isDarkMode, setIsDarkMode] = useState(false);
+  const [darkMode, setDarkMode] = useState(false);
   const [notificationsEnabled, setNotificationsEnabled] = useState(true);
   const [notificationTime, setNotificationTime] = useState('18:00');
+
+
+
+  useEffect(() => {
+    // Load settings from storage
+    const loadSettings = async () => {
+      const storedDarkMode = await AsyncStorage.getItem('darkMode');
+      const storedNotifications = await AsyncStorage.getItem('notificationsEnabled');
+      const storedTime = await AsyncStorage.getItem('notificationTime');
+      if (storedDarkMode !== null) setDarkMode(JSON.parse(storedDarkMode));
+      if (storedNotifications !== null) setNotificationsEnabled(JSON.parse(storedNotifications));
+      if (storedTime !== null) setNotificationTime(storedTime);
+    };
+    loadSettings();
+  }, []);
+
+  const saveSettings = async () => {
+    await AsyncStorage.setItem('darkMode', JSON.stringify(darkMode));
+    await AsyncStorage.setItem('notificationsEnabled', JSON.stringify(notificationsEnabled));
+    await AsyncStorage.setItem('notificationTime', notificationTime);
+    setSettingsModalVisible(false);
+  };
 
 
   const symptomsList = [
@@ -93,10 +116,12 @@ const handleDeleteLog = async (timestampToDelete) => {
       <Text style={styles.title}>Migraine & Headache Diary</Text>
       <Text style={styles.subtitle}>Track your symptoms and relief methods</Text>
 
+      {/* Log New Entry Button */}
       <TouchableOpacity style={styles.button} onPress={() => setModalVisible(true)}>
         <Text style={styles.buttonText}>Log New Entry</Text>
       </TouchableOpacity>
 
+      {/* View History Button */}
       <TouchableOpacity
         style={styles.button}
         onPress={async () => {
@@ -111,9 +136,11 @@ const handleDeleteLog = async (timestampToDelete) => {
         <Text style={styles.buttonText}>View History</Text>
       </TouchableOpacity>
 
+      {/* Settings Button */}
       <TouchableOpacity style={styles.button} onPress={() => setSettingsModalVisible(true)}>
         <Text style={styles.buttonText}>Settings</Text>
       </TouchableOpacity>
+
 
 
       {/* Pop-up Modal for New Logs*/}
@@ -203,58 +230,48 @@ const handleDeleteLog = async (timestampToDelete) => {
       </Modal>
 
       {/* Settings Modal */}
-      <Modal
-        animationType="slide"
-        transparent={true}
-        visible={settingsModalVisible}
-        onRequestClose={() => setSettingsModalVisible(false)}
-      >
+      <Modal animationType="slide" transparent={true} visible={settingsModalVisible}>
         <View style={styles.modalOverlay}>
-          <View style={styles.modalContainer}>
+          <View style={styles.modalContent}>
             <Text style={styles.modalTitle}>Settings</Text>
 
-            {/* Dark Mode Toggle */}
-            <View style={styles.settingItem}>
+            <View style={{ flexDirection: 'row', justifyContent: 'space-between', width: '100%', marginBottom: 10 }}>
               <Text>Dark Mode</Text>
-              <Switch
-                value={isDarkMode}
-                onValueChange={(value) => setIsDarkMode(value)}
+              <Switch value={darkMode} onValueChange={setDarkMode} />
+            </View>
+
+            <View style={{ flexDirection: 'row', justifyContent: 'space-between', width: '100%', marginBottom: 10 }}>
+              <Text>Enable Notifications</Text>
+              <Switch value={notificationsEnabled} onValueChange={setNotificationsEnabled} />
+            </View>
+
+            <View style={{ width: '100%', marginBottom: 10 }}>
+              <Text>Notification Time (e.g. 20:00)</Text>
+              <TextInput
+                style={{
+                  borderWidth: 1,
+                  borderColor: '#ccc',
+                  borderRadius: 5,
+                  padding: 8,
+                  marginTop: 5
+                }}
+                placeholder="HH:MM"
+                value={notificationTime}
+                onChangeText={setNotificationTime}
               />
             </View>
 
-            {/* Notifications Toggle */}
-            <View style={styles.settingItem}>
-              <Text>Notifications</Text>
-              <Switch
-                value={notificationsEnabled}
-                onValueChange={(value) => setNotificationsEnabled(value)}
-              />
-            </View>
+            <TouchableOpacity style={styles.button} onPress={saveSettings}>
+              <Text style={styles.buttonText}>Save Settings</Text>
+            </TouchableOpacity>
 
-            {/* Notification Time */}
-            {notificationsEnabled && (
-              <View style={styles.settingItem}>
-                <Text>Notification Time</Text>
-                <TextInput
-                  style={styles.input}
-                  value={notificationTime}
-                  onChangeText={setNotificationTime}
-                  placeholder="HH:mm"
-                  keyboardType="numeric"
-                />
-              </View>
-            )}
-
-            {/* Close Button */}
-            <TouchableOpacity
-              style={[styles.button, { marginTop: 20 }]}
-              onPress={() => setSettingsModalVisible(false)}
-            >
-              <Text style={styles.buttonText}>Close</Text>
+            <TouchableOpacity style={styles.closeButton} onPress={() => setSettingsModalVisible(false)}>
+              <Text style={styles.closeButtonText}>Close</Text>
             </TouchableOpacity>
           </View>
         </View>
       </Modal>
+
 
     </View>
   );
@@ -429,7 +446,7 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     minWidth: 80,
     textAlign: 'center',
-  },
+  }
   
 });
 
