@@ -1,6 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, ScrollView, StyleSheet } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as Print from 'expo-print';
+import * as Sharing from 'expo-sharing';
+import { PermissionsAndroid, Alert, Platform } from 'react-native';
+import { TouchableOpacity } from 'react-native-gesture-handler';
 
 const ReportScreen = () => {
   const [monthlyReport, setMonthlyReport] = useState({});
@@ -110,6 +114,41 @@ const ReportScreen = () => {
     });
   };
 
+  // Function to generate and download/share/print PDF report
+  const generatePDF = async () => {
+    const htmlContent = `
+      <h1 style="text-align:center;">Relief Nest Monthly Report</h1><br>
+    ${Object.entries(monthlyReport).map(([month, data]) => `
+      <h2>${month}</h2>
+      <p>Headaches: ${data.headacheCount}</p>
+      <p>Migraines: ${data.migraineCount}</p>
+      <p>Symptoms:</p>
+      <ul>
+        ${Object.entries(data.symptomFrequency).map(([symptom, count]) => `<li>${symptom}: ${count} times</li>`).join('')}
+      </ul>
+    `).join('')}
+    
+    <h2>AI Insights</h2>
+    <p>Next expected episode: ${aiInsights?.nextEpisode || 'N/A'}</p>
+    <p>Likely symptoms: ${aiInsights?.predictedSymptoms?.join(', ') || 'N/A'}</p>
+  `;
+  
+    try {
+      const { uri } = await Print.printToFileAsync({ html: htmlContent });
+  
+      if (!(await Sharing.isAvailableAsync())) {
+        alert('Sharing is not available on your device');
+        return;
+      }
+  
+      await Sharing.shareAsync(uri);
+    } catch (error) {
+      console.error("Error generating PDF:", error);
+      alert("Failed to create or share PDF");
+    }
+  };
+  
+
   return (
     <ScrollView style={styles.container}>
       <Text style={styles.title}>Monthly Report</Text>
@@ -138,6 +177,11 @@ const ReportScreen = () => {
           <Text>⚠️ Likely symptoms: {aiInsights.predictedSymptoms.join(', ') || 'No prediction available'}</Text>
         </View>
       )}
+
+      <TouchableOpacity style={styles.downloadBtn} onPress={generatePDF}>
+        <Text style={styles.downloadText}>📥 Download PDF Report</Text>
+      </TouchableOpacity>
+
     </ScrollView>
   );
 };
@@ -151,6 +195,9 @@ const styles = StyleSheet.create({
   noDataText: { textAlign: 'center', color: '#555', marginTop: 20 },
   aiInsights: { backgroundColor: '#FFF3CD', padding: 15, borderRadius: 10, marginTop: 20 },
   insightTitle: { fontSize: 22, fontWeight: 'bold', color: '#856404', marginBottom: 5 },
+  downloadBtn: { backgroundColor: '#5A189A', padding: 15, borderRadius: 10, alignItems: 'center', marginTop: 20 },
+  downloadText: { color: '#fff', fontSize: 16, fontWeight: 'bold'},
+  
 });
 
 export default ReportScreen;
