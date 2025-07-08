@@ -1,8 +1,9 @@
-import React, { useState, useEffect} from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { View, Text, TextInput, TouchableOpacity, Modal, StyleSheet, ScrollView, Switch } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome'; 
 import SegmentedControl from '@react-native-segmented-control/segmented-control';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+
 
 const HomeScreen = ({ navigation }) => {
   const [modalVisible, setModalVisible] = useState(false);
@@ -11,8 +12,6 @@ const HomeScreen = ({ navigation }) => {
   const [selectedSymptoms, setSelectedSymptoms] = useState([]);
   const [logs, setLogs] = useState([]); // Store log history
   const [settingsModalVisible, setSettingsModalVisible] = useState(false);
-  const [isDarkMode, setIsDarkMode] = useState(false);
-  const [darkMode, setDarkMode] = useState(false);
   const [notificationsEnabled, setNotificationsEnabled] = useState(true);
   const [notificationTime, setNotificationTime] = useState('18:00');
 
@@ -97,6 +96,8 @@ const handleDeleteLog = async (timestampToDelete) => {
     alert('Failed to delete log.');
   }
 };
+
+
 
   return (
     <View style={styles.container}>
@@ -234,11 +235,6 @@ const handleDeleteLog = async (timestampToDelete) => {
         <View style={styles.modalOverlay}>
           <View style={styles.modalContent}>
             <Text style={styles.modalTitle}>Settings</Text>
-
-            <View style={{ flexDirection: 'row', justifyContent: 'space-between', width: '100%', marginBottom: 10 }}>
-              <Text>Dark Mode</Text>
-              <Switch value={darkMode} onValueChange={setDarkMode} />
-            </View>
 
             <View style={{ flexDirection: 'row', justifyContent: 'space-between', width: '100%', marginBottom: 10 }}>
               <Text>Enable Notifications</Text>

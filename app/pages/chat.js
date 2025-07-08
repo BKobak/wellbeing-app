@@ -118,6 +118,7 @@ const ChatbotScreen = ({ navigation }) => {
             >
               
               <ViewMoreText
+                numberOfLines={3}
                 renderViewMore={onPress => <Text style={{ color: '#5A189A' }} onPress={onPress}>View More</Text>}
                 renderViewLess={onPress => <Text style={{ color: '#5A189A' }} onPress={onPress}>View Less</Text>}
               >

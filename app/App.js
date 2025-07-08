@@ -13,6 +13,8 @@ import NewProfile from './pages/new_profile';
 import ChatbotScreen from './pages/chat';
 import Report from './pages/report';
 
+
+// Create a stack navigator
 const Stack = createStackNavigator();
 
 // Configure how notifications are handled when the app is foregrounded
@@ -85,15 +87,15 @@ export default function App() {
   
 
   return (
-    <NavigationContainer>
-      <Stack.Navigator initialRouteName="Login">
-        <Stack.Screen name="Login" component={LogIn} />
-        <Stack.Screen name="Home" component={HomeScreen} />
-        <Stack.Screen name="ForgotPassword" component={ForgotPasswordScreen} />
-        <Stack.Screen name="CreateProfile" component={NewProfile} />
-        <Stack.Screen name="Chatbot" component={ChatbotScreen} />
-        <Stack.Screen name="Reports" component={Report} />
-      </Stack.Navigator>
-    </NavigationContainer>
+      <NavigationContainer>
+        <Stack.Navigator initialRouteName="Login">
+          <Stack.Screen name="Login" component={LogIn} />
+          <Stack.Screen name="Home" component={HomeScreen} />
+          <Stack.Screen name="ForgotPassword" component={ForgotPasswordScreen} />
+          <Stack.Screen name="CreateProfile" component={NewProfile} />
+          <Stack.Screen name="Chatbot" component={ChatbotScreen} />
+          <Stack.Screen name="Reports" component={Report} />
+        </Stack.Navigator>
+      </NavigationContainer>
   );
 }
