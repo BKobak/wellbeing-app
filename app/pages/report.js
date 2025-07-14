@@ -131,6 +131,7 @@ const ReportScreen = () => {
     <h2>AI Insights</h2>
     <p>Next expected episode: ${aiInsights?.nextEpisode || 'N/A'}</p>
     <p>Likely symptoms: ${aiInsights?.predictedSymptoms?.join(', ') || 'N/A'}</p>
+    <p style="font-size:10px; text-align:center; font-style:italic;">This is not a medical diagnosis and should not be treated as such.</p>
   `;
   
     try {
@@ -175,6 +176,11 @@ const ReportScreen = () => {
           <Text style={styles.insightTitle}>🔮 AI Insights</Text>
           <Text>📅 Next expected episode: {aiInsights.nextEpisode}</Text>
           <Text>⚠️ Likely symptoms: {aiInsights.predictedSymptoms.join(', ') || 'No prediction available'}</Text>
+          <Text>📊 Migraines and headaches occured: </Text>
+
+
+          <Text style={{ fontSize: 10, marginTop: 15, textAlign:'center', fontStyle: 'italic'}}> This is not a medical diagnosis and should not be treated as such.</Text>
+
         </View>
       )}
 
