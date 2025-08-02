@@ -1,4 +1,4 @@
-export async function getGPTResponse(userInput) {
+export async function getChatResponse(userInput) {
   try {
     const response = await fetch("http://192.168.1.192:3000/chat", {
       method: "POST",

@@ -11,7 +11,7 @@ import {
 } from 'react-native';
 import ViewMoreText from 'react-native-view-more-text';
 import Icon from 'react-native-vector-icons/FontAwesome';
-import { getGPTResponse } from "./chatbotAPI";
+import { getChatResponse } from "./chatbotAPI";
 
 const chatFAQ = [
   {
@@ -51,7 +51,7 @@ const ChatbotScreen = ({ navigation }) => {
     setMessages([...messages, newMessage]);
     setInputText('');
 
-    const botReply = await getGPTResponse(inputText);
+    const botReply = await getChatResponse(inputText);
 
     setMessages(prevMessages => [
       ...prevMessages,
