@@ -18,6 +18,7 @@ export default function LogIn() {
   const navigation = useNavigation();
   const scaleAnim = useRef(new Animated.Value(1)).current;
 
+  // Function to handle login
   const handleLogin = () => {
     if (username === 'Admin' && password === 'Admin') {
       navigation.navigate('Home');
@@ -25,6 +26,8 @@ export default function LogIn() {
       alert('Invalid username or password');
     }
   };
+  
+  // Function to animate button press
   const animateLoginPress = () => {
     Animated.sequence([
       Animated.timing(scaleAnim, {

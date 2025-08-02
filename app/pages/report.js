@@ -10,6 +10,7 @@ const ReportScreen = () => {
   const [monthlyReport, setMonthlyReport] = useState({});
   const [aiInsights, setAiInsights] = useState(null);
 
+  // Load logs from AsyncStorage and generate the monthly report
   useEffect(() => {
     const fetchLogs = async () => {
       try {
@@ -24,6 +25,7 @@ const ReportScreen = () => {
     fetchLogs();
   }, []);
 
+  // Function to generate the monthly report from logs
   const generateMonthlyReport = (logs) => {
     if (!Array.isArray(logs)) {
       console.warn("Logs is not an array:", logs);
@@ -117,7 +119,7 @@ const ReportScreen = () => {
   // Function to generate and download/share/print PDF report
   const generateAIReportPDF = async () => {
     try {
-      // 1. Load logs from AsyncStorage
+      // Load logs from AsyncStorage
       const storedLogs = await AsyncStorage.getItem('logs');
       const logs = storedLogs ? JSON.parse(storedLogs) : [];
   
@@ -126,7 +128,7 @@ const ReportScreen = () => {
         return;
       }
   
-      // 2. Send logs to your backend's /report endpoint
+      // Send logs to your backend's /report endpoint
       const response = await fetch('http://127.0.0.1:3000/report', {
         method: 'POST',
         headers: {
@@ -141,12 +143,12 @@ const ReportScreen = () => {
         throw new Error(data.error || 'No HTML received from server');
       }
   
-      // 3. Convert HTML to PDF
+      // Convert HTML to PDF
       const { uri } = await Print.printToFileAsync({
         html: data.html,
       });
   
-      // 4. Share the PDF
+      // Share the PDF
       if (await Sharing.isAvailableAsync()) {
         await Sharing.shareAsync(uri);
       } else {

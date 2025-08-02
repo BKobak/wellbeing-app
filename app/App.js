@@ -85,7 +85,7 @@ export default function App() {
     return () => subscription.remove();
   }, []);
   
-
+  // Main app navigation
   return (
       <NavigationContainer>
         <Stack.Navigator initialRouteName="Login">

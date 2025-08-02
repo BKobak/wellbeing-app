@@ -18,6 +18,7 @@ const ForgotPasswordScreen = () => {
   const navigation = useNavigation();
   const scaleAnim = useRef(new Animated.Value(1)).current;
 
+  // Function to handle password reset
   const handleResetPassword = () => {
     if (newPassword === confirmPassword && newPassword.length >= 6) {
       alert('Password reset successful!');
@@ -27,6 +28,7 @@ const ForgotPasswordScreen = () => {
     }
   };
 
+  // Function to animate button press
   const animatePress = () => {
     Animated.sequence([
       Animated.timing(scaleAnim, {

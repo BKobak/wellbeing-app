@@ -30,6 +30,7 @@ const HomeScreen = ({ navigation }) => {
     loadSettings();
   }, []);
 
+  // Save settings to AsyncStorage
   const saveSettings = async () => {
     await AsyncStorage.setItem('darkMode', JSON.stringify(darkMode));
     await AsyncStorage.setItem('notificationsEnabled', JSON.stringify(notificationsEnabled));
@@ -38,6 +39,7 @@ const HomeScreen = ({ navigation }) => {
   };
 
 
+  // List of symptoms with icons
   const symptomsList = [
     { id: 'headache', name: 'Headache', icon: 'medkit' },
     { id: 'nausea', name: 'Nausea', icon: 'exclamation-circle' },

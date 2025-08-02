@@ -13,6 +13,7 @@ import ViewMoreText from 'react-native-view-more-text';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { getChatResponse } from "./chatbotAPI";
 
+// Generate a list of FAQs with dynamic fetching
 const faqData = [
   {
     question: "➜ What are the symptoms of migraine?",
@@ -67,21 +68,27 @@ const ChatbotScreen = ({ navigation }) => {
   const handleSend = async () => {
     if (inputText.trim() === '') return;
 
+    // Add user message to the chat
     const newMessage = { id: messages.length + 1, text: inputText, sender: "user" };
     setMessages([...messages, newMessage]);
     setInputText('');
 
+    // Call the API to get the bot's reply
     const botReply = await getChatResponse(inputText);
 
+    // Add bot reply to the chat
     setMessages(prevMessages => [
       ...prevMessages,
       { id: prevMessages.length + 1, text: botReply, sender: "bot" }
     ]);
   };
 
+  // Automatically scroll to the bottom when new messages are added
   useEffect(() => {
     scrollViewRef.current?.scrollToEnd({ animated: true });
   }, [messages]);
+
+  // Render FAQ buttons with dynamic fetching
   const renderFAQButtons = () => {
       return faqData.map((faq, index) => (
         <View key={index} style={{ marginBottom: 10 }}>

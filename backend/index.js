@@ -4,6 +4,7 @@ import bodyParser from "body-parser";
 import dotenv from "dotenv";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
+// Load environment variables from .env file
 dotenv.config();
 
 const app = express();
@@ -12,6 +13,7 @@ const port = 3000;
 app.use(cors());
 app.use(bodyParser.json());
 
+// Initialise Google Generative AI client
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
 // Endpoint to handle chat messages
@@ -74,7 +76,7 @@ Generate a full report with:
   }
 });
 
-
+// Start the server
 app.listen(port, () => {
   console.log(`Server running at http://localhost:${port}`);
 });

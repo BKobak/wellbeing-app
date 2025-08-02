@@ -20,6 +20,7 @@ export default function NewProfile() {
   const navigation = useNavigation();
   const scaleAnim = useRef(new Animated.Value(1)).current;
 
+  // Function to handle profile creation
   const handleCreateProfile = () => {
     if (username && email && password) {
       alert('Profile created successfully!');
@@ -29,6 +30,7 @@ export default function NewProfile() {
     }
   };
 
+  // Function to animate button press
   const animateCreatePress = () => {
     Animated.sequence([
       Animated.timing(scaleAnim, {
