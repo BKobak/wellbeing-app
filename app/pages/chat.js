@@ -13,27 +13,47 @@ import ViewMoreText from 'react-native-view-more-text';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { getChatResponse } from "./chatbotAPI";
 
-const chatFAQ = [
+const faqData = [
   {
     question: "➜ What are the symptoms of migraine?",
-    answer: "Common symptoms of migraine include severe headache, nausea, vomiting, sensitivity to light and sound, and sometimes visual disturbances such as aura.",
+    answer: "Fetching answer...",
+    fetchAnswer: async () => {
+      const response = await getChatResponse("What are the symptoms of migraine? (short answer)");
+      return response || "Unable to fetch answer.";
+    },
   },
   {
     question: "➜ What are the common triggers for migraine?",
-    answer: "Common triggers for migraines include stress, certain foods (like aged cheese, processed meats, and alcohol), hormonal changes, lack of sleep, and environmental factors such as bright lights or strong smells.",
+    answer: "Fetching answer...",
+    fetchAnswer: async () => {
+      const response = await getChatResponse("What are the common triggers for migraine? (short answer)");
+      return response || "Unable to fetch answer.";
+    },
   },
   {
     question: "➜ What is the difference between migraine and headache?",
-    answer: "A migraine is a specific type of headache that is often more severe and can be accompanied by other symptoms like nausea and sensitivity to light. Regular headaches are usually less intense and do not have these additional symptoms.",
+    answer: "Fetching answer...",
+    fetchAnswer: async () => {
+      const response = await getChatResponse("What is the difference between migraine and headache? (short answer)");
+      return response || "Unable to fetch answer.";
+    },
   },
   {
     question: "➜ How to prevent migraine?",
-    answer: "Preventing migraines may involve lifestyle changes such as regular exercise, maintaining a healthy diet, managing stress, avoiding triggers, and possibly medication prescribed by a healthcare provider.",
+    answer: "Fetching answer...",
+    fetchAnswer: async () => {
+      const response = await getChatResponse("How to prevent migraine? (short answer)");
+      return response || "Unable to fetch answer.";
+    },
   },
   {
     question: "➜ Can migraines be cured?",
-    answer: "Currently, there is no cure for migraines, but they can often be managed effectively with lifestyle changes, medications, and other treatments.",
-  }
+    answer: "Fetching answer...",
+    fetchAnswer: async () => {
+      const response = await getChatResponse("Can migraines be cured? (short answer)");
+      return response || "Unable to fetch answer.";
+    },
+  },
 ];
 
 const ChatbotScreen = ({ navigation }) => {
@@ -62,29 +82,32 @@ const ChatbotScreen = ({ navigation }) => {
   useEffect(() => {
     scrollViewRef.current?.scrollToEnd({ animated: true });
   }, [messages]);
-
-  const handleFAQ = (question) => {
-    setExpandedFAQ(prev => prev === question ? null : question);
-  };
-
   const renderFAQButtons = () => {
-    return chatFAQ.map((faq, index) => (
-      <View key={index} style={{ marginBottom: 10 }}>
-        <TouchableOpacity
-          style={styles.faqButton}
-          onPress={() => handleFAQ(faq.question)}
-        >
-          <Text style={{ color: '#000', fontSize: 18 }}>{faq.question}</Text>
-        </TouchableOpacity>
-
-        {expandedFAQ === faq.question && (
-          <View style={styles.faqAnswerContainer}>
-            <Text style={styles.faqAnswer}>{faq.answer}</Text>
-          </View>
-        )}
-      </View>
-    ));
-  };
+      return faqData.map((faq, index) => (
+        <View key={index} style={{ marginBottom: 10 }}>
+          <TouchableOpacity
+            style={styles.faqButton}
+            onPress={async () => {
+              if (expandedFAQ === faq.question) {
+                setExpandedFAQ(null);
+              } else {
+                const answer = await faq.fetchAnswer();
+                faq.answer = answer; // Update the answer dynamically
+                setExpandedFAQ(faq.question);
+              }
+            }}
+          >
+            <Text style={{ color: '#000', fontSize: 18 }}>{faq.question}</Text>
+          </TouchableOpacity>
+  
+          {expandedFAQ === faq.question && (
+            <View style={styles.faqAnswerContainer}>
+              <Text style={styles.faqAnswer}>{faq.answer}</Text>
+            </View>
+          )}
+        </View>
+      ));
+    };
 
   return (
     <View style={styles.container}>

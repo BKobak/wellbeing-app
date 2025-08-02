@@ -115,39 +115,51 @@ const ReportScreen = () => {
   };
 
   // Function to generate and download/share/print PDF report
-  const generatePDF = async () => {
-    const htmlContent = `
-      <h1 style="text-align:center;">Relief Nest Monthly Report</h1><br>
-    ${Object.entries(monthlyReport).map(([month, data]) => `
-      <h2>${month}</h2>
-      <p>Headaches: ${data.headacheCount}</p>
-      <p>Migraines: ${data.migraineCount}</p>
-      <p>Symptoms:</p>
-      <ul>
-        ${Object.entries(data.symptomFrequency).map(([symptom, count]) => `<li>${symptom}: ${count} times</li>`).join('')}
-      </ul>
-    `).join('')}
-    
-    <h2>AI Insights</h2>
-    <p>Next expected episode: ${aiInsights?.nextEpisode || 'N/A'}</p>
-    <p>Likely symptoms: ${aiInsights?.predictedSymptoms?.join(', ') || 'N/A'}</p>
-    <p style="font-size:10px; text-align:center; font-style:italic;">This is not a medical diagnosis and should not be treated as such.</p>
-  `;
-  
+  const generateAIReportPDF = async () => {
     try {
-      const { uri } = await Print.printToFileAsync({ html: htmlContent });
+      // 1. Load logs from AsyncStorage
+      const storedLogs = await AsyncStorage.getItem('logs');
+      const logs = storedLogs ? JSON.parse(storedLogs) : [];
   
-      if (!(await Sharing.isAvailableAsync())) {
-        alert('Sharing is not available on your device');
+      if (logs.length === 0) {
+        Alert.alert('No logs found', 'Please add some logs before generating a report.');
         return;
       }
   
-      await Sharing.shareAsync(uri);
+      // 2. Send logs to your backend's /report endpoint
+      const response = await fetch('http://127.0.0.1:3000/report', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ logs }),
+      });
+  
+      const data = await response.json();
+  
+      if (!response.ok || !data.html) {
+        throw new Error(data.error || 'No HTML received from server');
+      }
+  
+      // 3. Convert HTML to PDF
+      const { uri } = await Print.printToFileAsync({
+        html: data.html,
+      });
+  
+      // 4. Share the PDF
+      if (await Sharing.isAvailableAsync()) {
+        await Sharing.shareAsync(uri);
+      } else {
+        Alert.alert('Sharing not available', 'PDF saved but cannot be shared on this device.');
+      }
+  
     } catch (error) {
-      console.error("Error generating PDF:", error);
-      alert("Failed to create or share PDF");
+      console.error('Error generating AI PDF report:', error);
+      Alert.alert('Report Generation Failed', error.message);
     }
   };
+  
+  
   
 
   return (
@@ -184,7 +196,7 @@ const ReportScreen = () => {
         </View>
       )}
 
-      <TouchableOpacity style={styles.downloadBtn} onPress={generatePDF}>
+      <TouchableOpacity style={styles.downloadBtn} onPress={generateAIReportPDF}>
         <Text style={styles.downloadText}>📥 Download PDF Report</Text>
       </TouchableOpacity>
 
