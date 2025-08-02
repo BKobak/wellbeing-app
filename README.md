@@ -1,8 +1,6 @@
-# wellbeing-app
+# Wellbeing App - Relieve Nest
 
-# Wellbeing App
-
-The Wellbeing App is designed to help users track and manage migraine and headache episodes effectively. It provides insights into patterns and triggers, empowering users to take control of their wellbeing.
+The Relieve Nest application is designed to help users track and manage migraine and headache episodes effectively. It provides insights into patterns and triggers, empowering users to take control of their wellbeing.
 
 ## Features
 
