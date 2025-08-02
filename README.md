@@ -1,14 +1,12 @@
 # Wellbeing App - Relieve Nest
 
-The Relieve Nest application is designed to help users track and manage migraine and headache episodes effectively. It provides insights into patterns and triggers, empowering users to take control of their wellbeing.
+The Relieve Nest application is designed to help users track and manage migraine and headache episodes effectively. By providing detailed insights into patterns, triggers, and preventive measures, the app empowers users to take control of their wellbeing and make informed decisions about their health. Whether you're looking to identify lifestyle factors contributing to your migraines or seeking a way to share data with healthcare professionals, Relieve Nest is your comprehensive solution.
 
 ## Features
 
-- Log migraine and headache episodes with detailed information.
-- Track potential triggers such as diet, sleep, and stress levels.
-- Visualize trends and patterns through charts and reports.
-- Set reminders for medication or preventive measures.
-- Export data for sharing with healthcare professionals.
+- **Log migraine and headache episodes**: Record detailed information about each episode, including associated symptoms.
+- **Visualise trends and patterns**: Gain insights into your migraine history through interactive charts and detailed reports.
+- **Set reminders**: Schedule notifications for migraine/headache logs entry to stay on top of your health.
 
 ## Installation
 
