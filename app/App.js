@@ -12,6 +12,8 @@ import ForgotPasswordScreen from './pages/password';
 import NewProfile from './pages/new_profile';
 import ChatbotScreen from './pages/chat';
 import Report from './pages/report';
+import DebugTestsScreen from './pages/DebugTests';
+import DebugReportTestScreen from './pages/DebugReport';
 
 
 // Create a stack navigator
@@ -95,6 +97,8 @@ export default function App() {
           <Stack.Screen name="CreateProfile" component={NewProfile} />
           <Stack.Screen name="Chatbot" component={ChatbotScreen} />
           <Stack.Screen name="Reports" component={Report} />
+          <Stack.Screen name="DebugTests" component={DebugTestsScreen} />
+          <Stack.Screen name="DebugReportTest" component={DebugReportTestScreen} />
         </Stack.Navigator>
       </NavigationContainer>
   );

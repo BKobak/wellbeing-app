@@ -266,6 +266,8 @@ const handleDeleteLog = async (timestampToDelete) => {
             <TouchableOpacity style={styles.closeButton} onPress={() => setSettingsModalVisible(false)}>
               <Text style={styles.closeButtonText}>Close</Text>
             </TouchableOpacity>
+            
+
           </View>
         </View>
       </Modal>

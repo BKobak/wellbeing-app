@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   Animated,
   Pressable,
+  Button,
   Image
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
@@ -17,6 +18,7 @@ export default function LogIn() {
   const [password, setPassword] = useState('');
   const navigation = useNavigation();
   const scaleAnim = useRef(new Animated.Value(1)).current;
+
 
   // Function to handle login
   const handleLogin = () => {
@@ -88,6 +90,12 @@ export default function LogIn() {
       <TouchableOpacity onPress={() => navigation.navigate('ForgotPassword')}>
         <Text style={styles.forgot_button}>Forgot Password?</Text>
       </TouchableOpacity>
+
+
+      {/* Debug Options */}
+      <Button title="Run Debug Tests" onPress={() => navigation.navigate('DebugTests')} />
+      <Button title="Run Debug Report Test" onPress={() => navigation.navigate('DebugReportTest')} />
+
       </View>
   );
 }
