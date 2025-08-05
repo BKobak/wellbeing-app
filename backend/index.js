@@ -143,3 +143,8 @@ Use plain text (no HTML).
     res.status(503).json({ error: "AI service unavailable or failed" });
   }
 });
+
+// Start the server
+app.listen(port, () => {
+  console.log(`Server running at http://localhost:${port}`);
+});
