@@ -115,34 +115,26 @@ Generate a full report with:
   - Predicted next episode date (if calculable)
   - Most likely symptoms based on the logs
 - A small footer note: "This is not a medical diagnosis. Please consult a healthcare professional for medical advice." 
-Use plain text (no HTML).
+Use HTML format with headings, paragraphs, and lists.
 `;
 
   try {
     const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
     const result = await model.generateContent(prompt);
     const response = result.response;
-    const reportText = response.text();
+    const html = response.text();
 
-    // Create PDF
-    const doc = new PDFDocument();
-    const bufferStream = new stream.PassThrough();
+    if (!html || !html.includes("<html")) {
+      return res.status(500).json({ error: "Invalid HTML returned from AI" });
+    }
 
-    res.setHeader("Content-Type", "application/pdf");
-    res.setHeader("Content-Disposition", "attachment; filename=relief-nest-report.pdf");
-
-    doc.pipe(bufferStream);
-    doc.fontSize(14).text(reportText, {
-      align: "left",
-    });
-    doc.end();
-
-    bufferStream.pipe(res);
+    res.json({ html });
   } catch (error) {
     console.error("AI report generation error:", error);
     res.status(503).json({ error: "AI service unavailable or failed" });
   }
 });
+
 
 // Start the server
 app.listen(port, () => {
